@@ -1,0 +1,643 @@
+\documentclass[unicode,a4paper,12pt]{ltjsarticle}
+
+% ---fonts---
+\PassOptionsToPackage{quiet}{fontspec}
+\usepackage{luatexja-fontspec}
+% \setmainfont{TeX Gyre Termes}
+\setmainjfont[BoldFont = HaranoAjiGothic-Regular]{HaranoAjiMincho}
+% \setmainjfont[BoldFont = IPAGothic]{IPAMincho}
+% \setmainjfont{Noto Sans CJK JP}
+\setmathrm{Latin Modern Roman}
+
+% ---wrapfig---
+\usepackage{wrapfig}
+
+% ---Embed comments with \pdfmargincomment{comment}---
+\usepackage{soul}
+\usepackage{pdfcomment}
+\usepackage[japanese]{babel}
+\usepackage{inputenx}
+
+% --- Add the comment with \todo[inline]{comment} ---
+% \usepackage{todonotes}
+% \setlength{\marginparwidth}{2cm}
+
+% ---Display \subsubsection at the Index
+% \setcounter{tocdepth}{3}
+
+% ---Setting about the geometry of the document----
+\usepackage[top=24truemm,bottom=24truemm,left=12truemm,right=12truemm]{geometry}
+% \usepackage{a4wide}
+% \pagestyle{empty}
+\renewcommand{\baselinestretch}{1.2}
+
+% ---Physics and Math Packages---
+\usepackage{amssymb,amsfonts,amsthm,mathtools}
+\usepackage{physics,braket,bm,bbm}
+\allowdisplaybreaks
+
+% ---underline---
+\usepackage[normalem]{ulem}
+
+% ---cancel---
+\usepackage{cancel}
+\usepackage{slashed}
+
+% --- surround the texts or equations
+% \usepackage{fancybox,ascmac}
+
+% ---settings of theorem environment---
+\theoremstyle{definition}
+\newtheorem{dfn}{定義}
+\newtheorem{prop}{命題}
+\newtheorem{thm}{定理}
+\newtheorem{exm}{例}
+\newtheorem{exc}{演習}
+\newtheorem{prb}{問題}
+
+% ---settings of proof environment---
+\renewcommand{\proofname}{\textbf{証明}}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+% ---Ignore the Warnings---
+\usepackage{silence}
+\WarningFilter{latexfont}{Some font shapes}
+\WarningFilter{latexfont}{Font shape}
+\WarningFilter{latexfont}{Size substitutions}
+\ExplSyntaxOn
+\msg_redirect_name:nnn{hooks}{generic-deprecated}{none}
+\ExplSyntaxOff
+
+% ---Insert the figure (If insert the `draft' at the option, the process becomes faster.)---
+\usepackage{graphicx}
+% \usepackage{subcaption}
+
+% ----Add a link to a text---
+\usepackage{url,hyperref}
+\usepackage[dvipsnames,svgnames]{xcolor}
+\hypersetup{colorlinks=true,citecolor=FireBrick,linkcolor=Navy,urlcolor=purple,bookmarksnumbered}
+
+% ---refer `texdoc xcolor' at the command line---
+
+% ---Tikz---
+% \usepackage{tikz,pgf,pgfplots,circuitikz}
+% \pgfplotsset{compat=1.15}
+% \usetikzlibrary{intersections,arrows.meta,angles,calc,3d,decorations.pathmorphing}
+
+% ---tcolorbox---
+\usepackage{tcolorbox}
+\tcbuselibrary{raster,skins,breakable}
+\newtcolorbox{graybox}[1][]{frame empty, colback=black!07!white, sharp corners}
+\newtcolorbox{redbox}[1][]{frame empty, colback=red!07!white, sharp corners}
+\newtcolorbox{bluebox}[1][]{frame empty, colback=blue!07!white, sharp corners}
+\newtcolorbox{greenbox}[1][]{frame empty, colback=green!07!white, sharp corners}
+
+% ---Add the section number to the equation, figure, and table number---
+\makeatletter
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\@addtoreset{equation}{section}
+
+\renewcommand{\thefigure}{\thesection.\arabic{figure}}
+\@addtoreset{figure}{section}
+
+\renewcommand{\thetable}{\thesection.\arabic{table}}
+\@addtoreset{table}{section}
+\makeatother
+
+% ---ignore Underfull \hbox in bibliography---
+\usepackage{etoolbox}
+\apptocmd{\thebibliography}{\raggedright}{}{}
+
+% ---enumerate---
+% \renewcommand{\labelenumi}{$\arabic{enumi}.$}
+% \renewcommand{\labelenumii}{$(\arabic{enumii})$}
+
+% to use valign=c
+\usepackage[export]{adjustbox}
+
+
+% ---Index---
+% \usepackage{makeidx}
+% \makeindex
+
+% --- Macros / Math ---
+\def \cA {\mathcal{A}}
+\def \vA {\vec{A}}
+\def \bC {\mathbb{C}}
+\def \cL {\mathcal{L}}
+\def \bN {\mathbb{N}}
+\def \cN {\mathcal{N}}
+\def \cO {\mathcal{O}}
+\def \vp {\vec{p}}
+\def \vx {\vec{x}}
+\def \bZ {\mathbb{Z}}
+
+\def \tM {\tilde{M}}
+\def \tT {\tilde{T}}
+\def \tQ {\tilde{Q}}
+
+\def \Re {\mathrm{Re}\,}
+\def \Im {\mathrm{Im}\,}
+\def \nab {\nabla}
+\def \l {\langle}
+\def \r {\rangle}
+
+\begin{document}
+
+% ---Title---
+\title{
+  二次元トーラス上でのランダウ準位
+}
+\author{
+  \href{https://x.com/Imiya1989/}{imiya}
+}
+% \date{\empty}
+\date{最終更新：\today}
+
+\maketitle
+% \begin{abstract}
+  %   XXXXXXXXXXXXXX
+  % \end{abstract}
+\tableofcontents
+\parskip=\baselineskip
+
+
+
+\section{はじめに}
+
+% 個人的に面白いと思っているネタがあったのですが、指導教員にボツにされたのでここにまとめておきます。
+% まあ確かに、ここにまとめておいて気がついたのですが、ただ既存の模型の捉え方を変えただけで``面白い物理''が出てくるかと言われると微妙かもしれませんね。
+% そういった意味で、それを一回聞いただけで見抜いた先生はさすがだなと思いました。
+% 何か面白いことができだったら、ぜひ連絡ください。
+
+今回のネタは、初等的な量子力学を知ってたら、割とついていけるネタだと思うので、興味があったら参考文献とか追ってみてください。
+
+あと、射影表現とか群コホモロジーとか詳しい人がいたら話に行くかもしれません。どこかでアピールしてください。
+
+\clearpage
+\section{ランダウ準位}
+
+ランダウ準位というのは、簡単にいうと磁場中の粒子の量子力学を考えると、その運動量が離散化されてしまう現象です。
+普通、磁場中の粒子の運動というと、古典力学では螺旋状にクルクル回る運動のことを表します。
+この運動の運動量というのは任意の値を取ることができ、それに応じて螺旋運動の軸からの距離が変わるのでした。
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.6\textwidth]{landau.png}
+  \caption{磁場中の粒子の運動}
+  \label{fig:landau}
+\end{figure}
+
+まずは、図\ref{fig:landau}のように、$xy$平面上に一様な磁場$B$がかかっているとします。
+このときの磁場は$\vec{A}=(B/2)(-y,x,0)$と書けました。実際に、このポテンシャルの回転をとってみると$\vec{B}=\vec{\nabla}\times\vA=(0,0,B)$となり、$z$方向に一様な磁場がかかっていることがわかります。
+
+このときのハミルトニアンは
+\begin{equation}
+  H= \frac{1}{2m} \left( \vp-\vA \right)^2
+  \label{eq:hamiltonian-landau}
+\end{equation}
+と書けます。ただし、自然単位系$\hbar=c=1$を使い、しかも電荷$e=1$としています。ですので、本当は$\vp-(e/c)\vA$と書くべきところを$\vp-\vA$と書いています。
+
+とりあえず、正準方程式を使って運動方程式を求めてみましょう。
+それぞれ
+\begin{align}
+  \dot{\vx} & = \pdv{H}{\vp} = \frac{1}{m} \left( \vp - \vA \right)               \\
+  \dot{\vp} & = -\pdv{H}{\vx} = \frac{1}{m} \left( p_i - A_i \right)\vec{\nab}A_i
+  \label{eq:dot-p-landau}
+\end{align}
+ですので\footnote{
+  運動量のほうは少し難しいですが、例えば$x$で微分をするとき、ハミルトニアンが
+  \begin{equation*}
+    H = \frac{1}{2m}
+    \left[
+      \left( p_x + \frac{B}{2}y \right)^2
+      +
+      \left( p_y - \frac{B}{2}x \right)^2
+      \right]
+  \end{equation*}
+  で書けることに気をつけると
+  \begin{equation*}
+    \pdv{H}{x}
+    =
+    \frac{1}{m}\left( p_y-\frac{B}{2}x \right)\cdot\left( -\frac{B}{2} \right)
+    =
+    -\frac{1}{m} \left( p_y - A_y \right) \partial_x A_y
+  \end{equation*}
+  となってるいるので、\eqref{eq:dot-p-landau}の形になりそうだなとわかります。
+}、$\vx$のほうを時間微分してもう一方の$\dot{\vp}$の方程式を使うと、キレイに
+\begin{equation}
+  \ddot{\vx}=\frac{1}{m}\vec{v}\times\vec{B}
+\end{equation}
+となり、右辺がちょうどローレンツ力の形になっていることがわかります。
+ですので、ひとまずこのハミルトニアン\eqref{eq:hamiltonian-landau}を調べれば良さそうだといえそうです。
+
+さて、これから量子力学に移ります。
+まずは素朴に$[x_i,p_j]=i$という交換関係を仮定して、この系について調べてみましょう。
+古典系でこの系が円運動をすることがわかっているので、物理に慣れている人であれば、なんとなく調和振動子的なものが出てくるのではないかと予想するかもしれません。
+実際その通りで、適切な変数変換を行うと、このハミルトニアンは対角化できます。
+
+ここで、少しトリッキーな変換をします。今、2次元の平面を考えているので、調和振動子のモードは2つあるはずです。
+それらを少しねじって
+\begin{align}
+  a
+   & =
+  \frac{1}{\sqrt{2}}
+  \left[
+    \left( \frac{Bx}{2}-ip_x \right)
+    -i
+    \left( \frac{By}{2}-ip_y \right)
+    \right],
+  \\
+  a^{\dagger}
+   & =
+  \frac{1}{\sqrt{2}}
+  \left[
+    \left( \frac{Bx}{2}+ip_x \right)
+    +i
+    \left( \frac{By}{2}+ip_y \right)
+    \right],
+  \\
+  b
+   & =
+  \frac{1}{\sqrt{2}}
+  \left[
+    \left( \frac{Bx}{2}-ip_x \right)
+    +i
+    \left( \frac{By}{2}-ip_y \right)
+    \right],
+  \\
+  b^{\dagger}
+   & =
+  \frac{1}{\sqrt{2}}
+  \left[
+    \left( \frac{Bx}{2}+ip_x \right)
+    -i
+    \left( \frac{By}{2}+ip_y \right)
+    \right]
+\end{align}
+と定義します。これらはいつもの生成消滅演算子の交換関係
+\begin{equation}
+  [a,a^{\dagger}]=[b,b^{\dagger}]=1, \quad
+  [a,b]=[a,b^{\dagger}]=0
+\end{equation}
+を満たします。
+
+この4つの新しい変数を使ってハミルトニアンを表すのですが、このとき実は$b$と$b^{\dagger}$が消えてしまい、ハミルトニアンは
+\begin{equation}
+  H = \frac{1}{2m} \left( a^{\dagger}a + \frac{1}{2} \right)
+\end{equation}
+と書けてしまいます。実際、$a$と$a^{\dagger}$を元の変数に戻して計算してみると
+\begin{align}
+  H
+   & =
+  \frac{1}{2m}
+  \left\{
+  \left[
+    \left( \frac{Bx}{2}+ip_x \right)
+    +i
+    \left( \frac{By}{2}+ip_y \right)
+    \right]
+  \cdot
+  \left[
+    \left( \frac{Bx}{2}-ip_x \right)
+    -i
+    \left( \frac{By}{2}-ip_y \right)
+    \right]
+  +
+  1
+  \right\}
+  \nonumber
+  \\
+   & =
+  \frac{1}{2m}
+  \left\{
+  p_x^2 + p_y^2
+  +
+  \frac{B^2}{4}x^2 + \frac{B^2}{4}y^2
+  +
+  B(yp_x - xp_y)
+  \right\}
+\end{align}
+となり、元のハミルトニアン\eqref{eq:hamiltonian-landau}に一致することがわかります。
+したがって、エネルギー固有値は$N=a^{\dagger}a$の固有値$n=0,1,2,\ldots$に対して
+\begin{equation}
+  E_n = \frac{B}{m} \left( n + \frac{1}{2} \right)
+\end{equation}
+となり、量子化されていることがわかります。
+
+では、もう一方の$b$と$b^{\dagger}$は何を表しているのでしょうか？
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+\section{コンパクトボゾンと非可逆対称性}
+
+では、話題を変えて、ちょっと特殊な量子力学の話をしましょう。
+ここで考えるのは、1次元のコンパクトボゾンと言われる$S^1$上の自由粒子の量子力学です。
+
+
+ラグランジアンは
+\begin{equation}
+  L
+  =
+  \frac{1}{2}\dot{q}^2 + \frac{1}{2\pi} \theta \dot{q}
+  \label{eq:compact-boson-lagrangian}
+\end{equation}
+です。この$q(t)$は$S^1$上の座標を表し、$q(t)\sim q(t)+2\pi$という同一視が入ります。
+\eqref{eq:compact-boson-lagrangian}の第1項は普通の自由粒子の運動項ですが、それに加えて全微分である第2項が入っています。
+この項は古典的には運動方程式に影響を与えませんが、量子論では非自明な影響を与えます\cite{Gaiotto:2017yup}。
+
+後ろの項を、この1周分の周期$T$で積分してみると
+\begin{equation}
+  \int \dot{q} \dd t
+  =
+  q(T) - q(0)
+\end{equation}
+となりますが、ここで$t=0$と$t=T$では同じ点を表すことにすると、$q(T)=q(0)+2\pi \bZ$となります。したがって、$\displaystyle \int \dot{q} \dd t = 2\pi n\in 2\pi \bZ$となり、$e^{in\theta}$と経路積分の重みづけがなされることから$\theta \sim \theta+2\pi$は同一の物理を表すことがわかります。
+したがって、$\theta$も$S^1$上の角度変数$0\leq \theta <2\pi$です。
+
+では、ハミルトニアンを求めてみましょう。共役運動量は
+\begin{equation}
+  \Pi_q
+  =
+  \pdv{\cL}{\dot{q}}
+  =
+  \dot{q} + \frac{\theta}{2\pi}
+\end{equation}
+ですので、ハミルトニアンは
+\begin{equation}
+  H_{\theta}
+  =
+  \Pi_q \dot{q}-L
+  =
+  \frac{1}{2}\left( \Pi_q -\frac{\theta}{2\pi}\right)^2
+\end{equation}
+となります。
+一見すると、このハミルトニアンは$\theta\sim \theta+2\pi$の境界条件を満たしていなさそうですが、$U=e^{iq}$というユニタリー演算子を考えると
+\begin{equation}
+  U H_{\theta} U^{\dagger}
+  =
+  \frac{1}{2}\left( \Pi_q - 1 -\frac{\theta}{2\pi}\right)^2
+  =
+  H_{\theta + 2\pi}
+\end{equation}
+となり、ユニタリー同値であることがわかります。
+このハミルトニアンは$\Pi_q = -i\partial_q$しか含んでいないので、固有関数はいつも通りの平面波$e^{inq}$です。
+つまり、固有方程式は
+\begin{equation}
+  \frac{1}{2}\left( -i\partial_q - \frac{\theta}{2\pi} \right)^2 \Psi_n(q)
+  =
+  E_n \Psi_n(q)
+\end{equation}
+であり、固有関数と固有値は
+\begin{equation}
+  \Psi_n(q) = \frac{1}{\sqrt{2\pi}}e^{inq}, \quad E_n = \frac{1}{2}\left( n - \frac{\theta}{2\pi} \right)^2
+\end{equation}
+になります。波動関数は$q\sim q+2\pi$の周期性をもっていますし、固有値のほうは$\theta\rightarrow \theta +2\pi$とすると$E_n$から$E_{n-1}$とシフトし、結果的に同じスペクトルを与えることがわかります。
+
+基本的には上で述べたような話で議論が尽きているように思えるのですが、$\theta = \pi$のときは$E_0=E_1$となり、これが最低エネルギーですので真空が縮退します。
+一見すると特殊な場合を考えているだけで、この事実から特に面白いことが引き出せそうには思えないのですが、実は$\theta=\pi$のときにだけ存在するアクシデンタルな対称性が存在し、さらにその対称性から真空が縮退する理由を説明することができます。
+
+まず、元のハミルトニアンに存在する対称性として、$\cO_\alpha: q\rightarrow q+\alpha\ (0\leq \alpha <2\pi)$と変換する$U(1)$対称性があります。
+$\theta=\pi$のときは、さらに荷電共役に対応する離散変換$\cO_C:q\rightarrow -q$が存在します。
+この変換では$q$の1次の項の符号が反転することから、ハミルトニアンは$H_{\pi}\rightarrow H_{-\pi}\sim H_{\pi}$となって不変です。
+
+これらの変換がどのように状態$\ket{n}$に作用するかを考えてみましょう。
+まずは$\cO_\alpha$の方ですが、これは波動関数が$\braket{z|n}=\Psi_{n}(q)\rightarrow e^{i\alpha n}\Psi_n(q)$となることから、状態ベクトルに対しては
+\begin{equation}
+  \cO_\alpha \ket{n} = e^{i\alpha n} \ket{n}
+\end{equation}
+と作用します。
+一方、荷電共役変換$\cO_C$の方は少し複雑です。
+まず、$H_{\pi}\rightarrow H_{-\pi}$と写ることから$n\rightarrow -n$となるように思えるのですが、$H_{-\pi}\sim H_{\pi}$の同一視をするときに、level crossingが起きているのでした。それを考慮すると
+\begin{equation}
+  \cO_C \ket{n} = \ket{-n+1}
+\end{equation}
+と作用します。
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.6\textwidth]{level.png}
+  \caption{level crossing（わかりづらくてすみません）}
+  \label{fig:level}
+\end{figure}
+
+さて、ここで考えた$U(1)$変換$\cO_\alpha$と荷電共役$\cO_C$は素朴に考えると直交群$O(2)\simeq U(1)\rtimes \bZ_2$を生成しそうに思えます。
+ここで、半直積$U(1)\rtimes \bZ_2\ni(\alpha^{(\prime)},c^{(\prime)})=g^{(\prime)}$の演算は
+\begin{equation}
+  g' \cdot g
+  =
+  (\alpha',c') \cdot (\alpha,c)
+  \equiv
+  (\alpha' + (-1)^{c'}\alpha, c'+c)
+\end{equation}
+で与えられます。これは例えば、
+\begin{equation}
+  g = g' = \left( \frac{3}{4}\pi,1 \right)
+\end{equation}
+とすれば、$g'\cdot g=(0,0)=e\in U(1)\rtimes \bZ_2$なので、$120^{\circ}$度回転をして、次に折り返してさらに$120^{\circ}$度回転するという操作が最終的に原点に戻ることを表しています。
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{action-semi-product-example.png}
+  \caption{$120^{\circ}$度回転をして折り返してさらに$120^{\circ}$度回転する操作}
+\end{figure}
+
+
+直感的に$\cO_\alpha$は$U(1)\rtimes \bZ_2\ni (\alpha,0)$に対応し、$\cO_C$は$(0,1)$に対応するように思えます。そこで、$\cO_C\cO_\alpha\cO$という操作を考えてみましょう。
+素朴に、群で計算をしてみると
+\begin{equation}
+  (0,1)\cdot (\alpha,0) \cdot (0,1)
+  =
+  (-\alpha,0)
+\end{equation}
+となるので、$\cO_C\cO_\alpha\cO_C=\cO_{-\alpha}$が成立するはずです。実際、ハミルトニアンの対称性としてはこれが成立するでしょう。
+
+しかしながら、状態に対する作用を考えてみると
+\begin{equation}
+  \cO_\alpha \cO_C\ket{n}
+  =
+  e^{i\alpha(-n+1)} \ket{-n+1}
+  ,\quad
+  \cO_C \cO_\alpha \ket{n}
+  =
+  e^{i\alpha n} \ket{-n+1}
+\end{equation}
+となるので、
+\begin{equation}
+  \cO_C \cO_\alpha \cO_C \ket{n}
+  =
+  e^{-i\alpha n + i\alpha}\ket{n}
+  \label{eq:final-result}
+\end{equation}
+となり、$\cO_C\cO_\alpha\cO_C\neq\cO_{-\alpha}$であることがわかります。
+したがって、この系の量子力学的な対称性は$O(2)$ではありません。
+これは、一種の量子異常で$G=O(2)$に対するトフーフトアノマリーとして解釈できます。
+
+では、この系の対称性はどうなったのでしょうか？
+\eqref{eq:final-result}を見てみると、$e^{i\alpha}$という余計な位相がついていることがわかるので、新たな位相変換
+\begin{equation}
+  I_\beta \ket{n} = e^{i\beta} \ket{n}
+\end{equation}
+を考えると$\cO_C \cO_\alpha \cO_C=I_\alpha \cO_{-\alpha}$が成立することがわかります。
+よって、$V_{\alpha}\equiv I_{-\alpha/2}\cO_{\alpha}$として生成子を組み合わせると
+\begin{equation}
+  \cO_C V_{\alpha} \cO_C = V_{-\alpha}
+\end{equation}
+という関係が成立し、$\cO_{C}$が荷電共役として振る舞うようになります。
+このとき、$\alpha$は$0\leq \alpha <4\pi$の範囲で値を取ることになります。
+したがって、これは$O(2)$の二重被覆群である$Pin(2)$が系の量子論的な対称性として実現されていることになります\footnote{
+  どうやら、ここでやったような手続きを中心拡大というようです。
+  詳しい人がいらっしゃったら、ぜひ教えてください。
+}。
+このことから分かる通り、状態は必ず$Pin(2)$の表現になり、それは2次元の表現をもつことになります。
+このことから、全ての状態は少なくとも2つの縮退を持つことがわかる、ということです。
+
+一応、ここで説明したい話は終わったのですが、この理論に他の項があった場合についても言及しておきます（詳しくは\cite{Gaiotto:2017yup}を読んでください）。
+$\theta=\pi$の場合は、古典的に$U(1)\rtimes \bZ_2$の対称性があるわけでしたが、基本的にポテンシャル$V(q)$を加えてしまうとこの対称性が破れてしまいます。
+しかしながら、ポテンシャルが$\cos(2q)$の多項式だとどうなるでしょうか？
+この場合は、$\alpha=\pi$の平行移動と荷電共役の組み合わせが対称性として残ります。
+これらが独立にかかるので、$\bZ_2\times \bZ_2$の対称性が実現されることになります。
+この場合も、量子論としては2次元表現になるようで、やはり全ての状態が2重縮退することになります\footnote{
+  Qubitが2次元表現をもつのも、この理由からです。対称性が同じであることがわかるかと思います。
+}。
+こういったように、量子論の対称性から系の一定の性質を調べられるのは面白いですね。
+
+
+\paragraph{群コホモロジーから}
+
+上の議論は、群コホモロジーの視点からも理解できます\cite{Ohmori:2022}。
+ここでは一般的に系の古典的な対称性を$G$としましょう。
+ある変換$g\in G$が状態に作用するときの形を$U_g$とします。
+このとき、ある二つの変換$g,g'\in G$を連続で行うことは、その合成$gg'\in G$を一発行うことに対応するはずなので、一般に
+\begin{equation}
+  U_g U_{g'}
+  =
+  e^{i\alpha(g,g')} U_{gg'}
+  \label{eq:projective-representation}
+\end{equation}
+と書けます。ここで、$\alpha(g,g')$は位相を表す実数です。
+なぜ位相が出てくるかというと、状態は位相の違いを区別しないことに起因します\footnote{
+  $g\in G$に対して、演算子$U_g$が存在することはウィグナーの定理によって保証されているそうです。
+  しかしながら、この定理では位相の不定性を残して一意に定まることしか保証していません。
+}。
+さて、$G$は群ですので、その結合律から$U_{(g_1g_2)g_3}=U_{g_1(g_2g_3)}$が成立していて欲しいわけですが、これを\eqref{eq:projective-representation}を使って書き下すと
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+\section{トーラス上のランダウ準位}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+\section{近況報告}
+
+
+
+
+
+% ----------------------------------------
+% \clearpage
+
+% \makeatletter
+% \renewcommand{\appendix}{\par
+  %   \setcounter{section}{0}%
+  %   \setcounter{subsection}{0}%
+  %   \gdef\presectionname{\appendixname}%
+  %   \gdef\postsectionname{}%
+  %   \gdef\thesection{\presectionname\@Alph\c@section\postsectionname}%
+  %   \gdef\thesubsection{\@Alph\c@section.\@arabic\c@subsection}%
+  %   \renewcommand{\theequation}{\@Alph\c@section.\arabic{equation}}%
+  %   \renewcommand{\thefigure}{\@Alph\c@section.\arabic{figure}}%
+  %   \renewcommand{\thetable}{\@Alph\c@section.\arabic{table}}%
+  % }
+% \makeatother
+
+% \appendix
+
+% \section{Notes}
+
+
+% ----------------------------------------
+\clearpage
+\bibliography{ref}
+\bibliographystyle{ytphys}
+
+% ----------------------------------------
+% \clearpage
+% \index{hoge@hoge}
+% \printindex
+
+
+\end{document}
