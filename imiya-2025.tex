@@ -75,7 +75,7 @@
 % ----Add a link to a text---
 \usepackage{url,hyperref}
 \usepackage[dvipsnames,svgnames]{xcolor}
-\hypersetup{colorlinks=true,citecolor=FireBrick,linkcolor=Navy,urlcolor=purple,bookmarksnumbered}
+\hypersetup{colorlinks=true,citecolor=FireBrick,linkcolor=Navy,urlcolor=DarkBlue,bookmarksnumbered}
 
 % ---refer `texdoc xcolor' at the command line---
 
@@ -83,14 +83,6 @@
 % \usepackage{tikz,pgf,pgfplots,circuitikz}
 % \pgfplotsset{compat=1.15}
 % \usetikzlibrary{intersections,arrows.meta,angles,calc,3d,decorations.pathmorphing}
-
-% ---tcolorbox---
-\usepackage{tcolorbox}
-\tcbuselibrary{raster,skins,breakable}
-\newtcolorbox{graybox}[1][]{frame empty, colback=black!07!white, sharp corners}
-\newtcolorbox{redbox}[1][]{frame empty, colback=red!07!white, sharp corners}
-\newtcolorbox{bluebox}[1][]{frame empty, colback=blue!07!white, sharp corners}
-\newtcolorbox{greenbox}[1][]{frame empty, colback=green!07!white, sharp corners}
 
 % ---Add the section number to the equation, figure, and table number---
 \makeatletter
@@ -129,6 +121,7 @@
 \def \cN {\mathcal{N}}
 \def \cO {\mathcal{O}}
 \def \vp {\vec{p}}
+\def \bR {\mathbb{R}}
 \def \vx {\vec{x}}
 \def \bZ {\mathbb{Z}}
 
@@ -138,6 +131,9 @@
 
 \def \Re {\mathrm{Re}\,}
 \def \Im {\mathrm{Im}\,}
+\def \Ker {\mathrm{Ker}\,}
+\def \tr {\mathrm{tr}\,}
+\def \Tr {\mathrm{Tr}\,}
 \def \nab {\nabla}
 \def \l {\langle}
 \def \r {\rangle}
@@ -146,7 +142,7 @@
 
 % ---Title---
 \title{
-  二次元トーラス上でのランダウ準位
+  2次元トーラス上でのランダウ準位
 }
 \author{
   \href{https://x.com/Imiya1989/}{imiya}
@@ -159,23 +155,18 @@
   %   XXXXXXXXXXXXXX
   % \end{abstract}
 \tableofcontents
-\parskip=\baselineskip
-
-
+% \parskip=\baselineskip
 
 \section{はじめに}
 
-% 個人的に面白いと思っているネタがあったのですが、指導教員にボツにされたのでここにまとめておきます。
-% まあ確かに、ここにまとめておいて気がついたのですが、ただ既存の模型の捉え方を変えただけで``面白い物理''が出てくるかと言われると微妙かもしれませんね。
-% そういった意味で、それを一回聞いただけで見抜いた先生はさすがだなと思いました。
-% 何か面白いことができだったら、ぜひ連絡ください。
+このノートでは、2次元のトーラス上でのランダウ準位について説明し、少しだけその特殊性について話をしたいと思います。
+色々と新しいことをつけ加えようと思っていたのですが、時間が全く足らず、結局、先行研究のまとめみたいな形になってしまいました。
+\ref{sec:landau-level-torus}章が本題で、そこの最後や\hyperlink{sec:conclusion}{あとがき}とかで展望を載せておきます。
 
-今回のネタは、初等的な量子力学を知ってたら、割とついていけるネタだと思うので、興味があったら参考文献とか追ってみてください。
 
-あと、射影表現とか群コホモロジーとか詳しい人がいたら話に行くかもしれません。どこかでアピールしてください。
-
-\clearpage
 \section{ランダウ準位}
+\nocite{Hitoshi2006}
+\nocite{Tong2016}
 
 ランダウ準位というのは、簡単にいうと磁場中の粒子の量子力学を考えると、その運動量が離散化されてしまう現象です。
 普通、磁場中の粒子の運動というと、古典力学では螺旋状にクルクル回る運動のことを表します。
@@ -201,7 +192,9 @@
 とりあえず、正準方程式を使って運動方程式を求めてみましょう。
 それぞれ
 \begin{align}
-  \dot{\vx} & = \pdv{H}{\vp} = \frac{1}{m} \left( \vp - \vA \right)               \\
+  \dot{\vx} & = \pdv{H}{\vp} = \frac{1}{m} \left( \vp - \vA \right)
+  \label{eq:dot-x-landau}
+  \\
   \dot{\vp} & = -\pdv{H}{\vx} = \frac{1}{m} \left( p_i - A_i \right)\vec{\nab}A_i
   \label{eq:dot-p-landau}
 \end{align}
@@ -232,116 +225,156 @@
 ですので、ひとまずこのハミルトニアン\eqref{eq:hamiltonian-landau}を調べれば良さそうだといえそうです。
 
 さて、これから量子力学に移ります。
-まずは素朴に$[x_i,p_j]=i$という交換関係を仮定して、この系について調べてみましょう。
+まずは素朴に$[x_i,p_j]=i\delta_{ij}$という交換関係を仮定して、この系について調べてみましょう。
 古典系でこの系が円運動をすることがわかっているので、物理に慣れている人であれば、なんとなく調和振動子的なものが出てくるのではないかと予想するかもしれません。
 実際その通りで、適切な変数変換を行うと、このハミルトニアンは対角化できます。
 
-ここで、少しトリッキーな変換をします。今、2次元の平面を考えているので、調和振動子のモードは2つあるはずです。
-それらを少しねじって
-\begin{align}
+キーになるのは、$\vec{\Pi}=\vp -\vA$の交換関係が
+\begin{equation}
+  [\Pi_x, \Pi_y] = iB
+\end{equation}
+と定数になることです。ハミルトニアンが$H\propto \Pi_x^2 + \Pi_y^2$の形で書けており、$\Pi_x$と$\Pi_y$の交換関係が定数になることから、調和振動子の位置と運動量の交換関係に似た形になっていることがわかります。
+ですので、
+\begin{equation}
   a
-   & =
-  \frac{1}{\sqrt{2}}
-  \left[
-    \left( \frac{Bx}{2}-ip_x \right)
-    -i
-    \left( \frac{By}{2}-ip_y \right)
-    \right],
-  \\
+  \equiv
+  \frac{1}{\sqrt{2B}} \left( \Pi_x + i \Pi_y \right), \quad
   a^{\dagger}
-   & =
-  \frac{1}{\sqrt{2}}
-  \left[
-    \left( \frac{Bx}{2}+ip_x \right)
-    +i
-    \left( \frac{By}{2}+ip_y \right)
-    \right],
-  \\
-  b
-   & =
-  \frac{1}{\sqrt{2}}
-  \left[
-    \left( \frac{Bx}{2}-ip_x \right)
-    +i
-    \left( \frac{By}{2}-ip_y \right)
-    \right],
-  \\
-  b^{\dagger}
-   & =
-  \frac{1}{\sqrt{2}}
-  \left[
-    \left( \frac{Bx}{2}+ip_x \right)
-    -i
-    \left( \frac{By}{2}+ip_y \right)
-    \right]
-\end{align}
-と定義します。これらはいつもの生成消滅演算子の交換関係
-\begin{equation}
-  [a,a^{\dagger}]=[b,b^{\dagger}]=1, \quad
-  [a,b]=[a,b^{\dagger}]=0
+  \equiv
+  \frac{1}{\sqrt{2B}} \left( \Pi_x - i \Pi_y \right)
 \end{equation}
-を満たします。
-
-この4つの新しい変数を使ってハミルトニアンを表すのですが、このとき実は$b$と$b^{\dagger}$が消えてしまい、ハミルトニアンは
+とすれば、$[a,a^{\dagger}]=1$となり、逆にハミルトニアンは
 \begin{equation}
-  H = \frac{1}{2m} \left( a^{\dagger}a + \frac{1}{2} \right)
-\end{equation}
-と書けてしまいます。実際、$a$と$a^{\dagger}$を元の変数に戻して計算してみると
-\begin{align}
   H
+  =
+  \frac{B}{m}\left( a^{\dagger}a + \frac{1}{2} \right)
+\end{equation}
+と書けます。
+したがって、エネルギー固有値は
+\begin{equation}
+  E_n
+  =
+  \omega\left( n + \frac{1}{2} \right),
+  \quad n=0,1,2,\cdots,
+  \quad
+  \omega \equiv \frac{B}{m}
+\end{equation}
+となり、調和振動子と同じように量子化されることがわかります。
+
+ひとまず、ハミルトニアンは対角化できたのですが、まだこの系には謎が残ります。
+元々の系の自由度は2つあったはずですが、結果を見る限り、この系の状態の量子数は$n$しかありません。
+もうひとつの自由度はどうなっているのでしょうか。
+
+これから真面目にやるのですが、残っている自由度について、それは何であるのかを簡単に述べておきたいと思います。
+その自由度の演算子を例えば$X$とすると、この$X$はハミルトニアンには現れていないので、もちろんハミルトニアンと交換してしまいます（と言い切ってしまうと雑すぎるかもしれませんが）。
+したがって、その自由度はある種の保存量であり、それはすなわちハミルトニアンの固有状態がその自由度についても同時固有状態になっていることを意味します。
+これはいわゆる縮退というもので、エネルギー固有値$E_n$に対して、無限に多くの状態が対応していることを意味します。
+
+さて、その保存量に対応する対称性とは何なのでしょうか。
+ハミルトニアンを見ているだけではわからないのですが、その対称性とは$x,y$軸方向への平行移動です。
+「磁場中の電子は螺旋運動をする」ということがわかっていれば、直感的に明らかだと思うのですが、今回はゲージを$\vA=(B/2)(-y,x,0)$としたので、平行移動をするとゲージポテンシャルが変わってしまい、その対称性があらわではありません。
+しかしながら、よくゲージ場の配位を見てみると
+\begin{equation}
+  \vec{A}
+  =
+  \frac{B}{2}
+  \begin{pmatrix}
+    -y \\
+    x  \\
+    0
+  \end{pmatrix}
+  \rightarrow
+  \vec{A}'
+  =
+  \frac{B}{2}
+  \begin{pmatrix}
+    -(y+\delta y) \\
+    x+\delta x    \\
+    0
+  \end{pmatrix}
+  =
+  \vec{A} + \frac{B}{2}\vec{\nab}\left( -y \delta x + x \delta y \right)
+\end{equation}
+となっているため、実はこの平行移動はゲージ変換に対応していることがわかります。
+したがって、平行移動は物理的な対称性として成立していそうです。
+
+この変換の生成子を求めましょう。そのために、いったんラグランジアンを書いて、そこからカレントをもとめ、そこから生成子を求めます。
+ラグランジアンですが、$\vec{x}$に共役な運動量は\eqref{eq:dot-x-landau}から$\vec{x}=m\dot{\vec{x}}+\vec{A}$なので
+\begin{align}
+  L
    & =
-  \frac{1}{2m}
-  \left\{
-  \left[
-    \left( \frac{Bx}{2}+ip_x \right)
-    +i
-    \left( \frac{By}{2}+ip_y \right)
-    \right]
-  \cdot
-  \left[
-    \left( \frac{Bx}{2}-ip_x \right)
-    -i
-    \left( \frac{By}{2}-ip_y \right)
-    \right]
-  +
-  1
-  \right\}
+  \vec{p}\cdot\dot{\vec{x}} - H
   \nonumber
   \\
    & =
-  \frac{1}{2m}
-  \left\{
-  p_x^2 + p_y^2
+  \frac{1}{2}m\dot{\vec{x}}^2 + \vA\cdot\dot{\vec{x}}
+  \nonumber
+  \\
+   & =
+  \frac{1}{2}m\left( \dot{x}^2 + \dot{y}^2 \right)
   +
-  \frac{B^2}{4}x^2 + \frac{B^2}{4}y^2
-  +
-  B(yp_x - xp_y)
-  \right\}
+  \frac{B}{2}\left( -y\dot{x} + x\dot{y} \right)
 \end{align}
-となり、元のハミルトニアン\eqref{eq:hamiltonian-landau}に一致することがわかります。
-したがって、エネルギー固有値は$N=a^{\dagger}a$の固有値$n=0,1,2,\ldots$に対して
+と書けます。
+このラグランジアンに対して、平行移動を行うと
 \begin{equation}
-  E_n = \frac{B}{m} \left( n + \frac{1}{2} \right)
+  \delta L
+  =
+  \frac{B}{2}
+  \dv{}{t}\left( -(\delta y) x + (\delta x) y\right)
+  \equiv
+  \dv{}{t} K(t)
 \end{equation}
-となり、量子化されていることがわかります。
+となるので、保存する生成子$Q$は
+\begin{align}
+  Q
+   & =
+  \pdv{L}{\dot{\vec{x}}}
+  \delta \vec{x}
+  -
+  K
+  \nonumber
+  \\
+   & =
+  \left(
+  m\dot{x}-\frac{B}{2}y
+  \right)\delta x
+  +
+  \left(
+  m\dot{y}+\frac{B}{2}x
+  \right)\delta y
+  -
+  \frac{B}{2}\left( -(\delta y) x + (\delta x) y\right)
+  \nonumber
+  \\
+   & =
+  \left( p_x - \frac{B}{2}y \right)\delta x
+  +
+  \left( p_y + \frac{B}{2}x \right)\delta y
+\end{align}
+です。したがって、平行移動の生成子は
+\begin{equation}
+  K_x
+  \equiv
+  p_x - \frac{B}{2}y, \quad
+  K_y
+  \equiv
+  p_y + \frac{B}{2}x
+\end{equation}
+と符号が入れ替わった形になります。
+この$K_x$と$K_y$は$\Pi_x$と$\Pi_y$と交換するので、ハミルトニアンとも交換することになり保存量します。
+この$K_x$と$K_y$の交換関係は$[K_x,K_y]=-iB$となるので
+\begin{equation}
+  b\equiv \frac{1}{\sqrt{2B}} \left( K_x - i K_y \right), \quad
+  b^{\dagger} \equiv \frac{1}{\sqrt{2B}} \left( K_x + i K_y \right)
+\end{equation}
+と定義すれば、$[b,b^{\dagger}]=1$となり、これらも調和振動子の生成消滅演算子のように振る舞います。
+したがって、この系の状態はふたつの調和振動子の状態でラベル付けできることになり、状態は$\ket{n,m}=(a^{\dagger})^n (b^{\dagger})^m \ket{0,0}$と書けます。
+ひとつの準位$n$に対して$m=0,1,2,\cdots$と無限に状態が存在するのが、この系の特徴です。
 
-では、もう一方の$b$と$b^{\dagger}$は何を表しているのでしょうか？
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-\clearpage
-\section{コンパクトボゾンと非可逆対称性}
+\section{コンパクトボゾンにおけるアノマリーと群コホモロジーの関係}
 
 では、話題を変えて、ちょっと特殊な量子力学の話をしましょう。
 ここで考えるのは、1次元のコンパクトボゾンと言われる$S^1$上の自由粒子の量子力学です。
@@ -358,7 +391,7 @@
 \eqref{eq:compact-boson-lagrangian}の第1項は普通の自由粒子の運動項ですが、それに加えて全微分である第2項が入っています。
 この項は古典的には運動方程式に影響を与えませんが、量子論では非自明な影響を与えます\cite{Gaiotto:2017yup}。
 
-後ろの項を、この1周分の周期$T$で積分してみると
+後ろの項を、周期$T$で積分してみると
 \begin{equation}
   \int \dot{q} \dd t
   =
@@ -446,7 +479,7 @@ $\theta=\pi$のときは、さらに荷電共役に対応する離散変換$\cO_
 \begin{equation}
   g = g' = \left( \frac{3}{4}\pi,1 \right)
 \end{equation}
-とすれば、$g'\cdot g=(0,0)=e\in U(1)\rtimes \bZ_2$なので、$120^{\circ}$度回転をして、次に折り返してさらに$120^{\circ}$度回転するという操作が最終的に原点に戻ることを表しています。
+とすれば、$g'\cdot g=(0,0)=e$なので、$120^{\circ}$度回転をして、次に折り返してさらに$120^{\circ}$度回転するという操作が最終的に原点に戻ることを表しています。
 
 \begin{figure}[ht]
   \centering
@@ -515,7 +548,7 @@ $\theta=\pi$の場合は、古典的に$U(1)\rtimes \bZ_2$の対称性がある�
 こういったように、量子論の対称性から系の一定の性質を調べられるのは面白いですね。
 
 
-\paragraph{群コホモロジーから}
+\paragraph{群コホモロジーの視点から}
 
 上の議論は、群コホモロジーの視点からも理解できます\cite{Ohmori:2022}。
 ここでは一般的に系の古典的な対称性を$G$としましょう。
@@ -531,80 +564,205 @@ $\theta=\pi$の場合は、古典的に$U(1)\rtimes \bZ_2$の対称性がある�
 なぜ位相が出てくるかというと、状態は位相の違いを区別しないことに起因します\footnote{
   $g\in G$に対して、演算子$U_g$が存在することはウィグナーの定理によって保証されているそうです。
   しかしながら、この定理では位相の不定性を残して一意に定まることしか保証していません。
+  \label{foot:wigner}
 }。
 さて、$G$は群ですので、その結合律から$U_{(g_1g_2)g_3}=U_{g_1(g_2g_3)}$が成立していて欲しいわけですが、これを\eqref{eq:projective-representation}を使って書き下すと
+\begin{equation}
+  U_{g_1}U_{g_2}U_{g_3}e^{-i\alpha(g_1,g_2)-i\alpha(g_1g_2,g_3)}
+  =
+  U_{g_1}U_{g_2}U_{g_3}e^{-i\alpha(g_2,g_3)-i\alpha(g_1,g_2g_3)}
+\end{equation}
+となるので、位相の部分が一致する\footnote{
+  位相の部分は$\bR/2\pi \bZ\simeq U(1)$に値を取るとします。
+}ことを要求すると
+\begin{equation}
+  \alpha(g_2,g_3) - \alpha(g_1g_2,g_3) + \alpha(g_1,g_2g_3) - \alpha(g_1,g_2) = 0
+  \label{eq:cocycle-condition}
+\end{equation}
+が成立する必要があります。
+この条件は、群コホモロジーの言葉でいうと、$\alpha(g,g')$が$2$-コサイクルであることを意味します。
+
+まず、一般に$n$-コチェインといった場合は、群$G$を$n$個だけ直積した$G^n=G\times\cdots\times G$上の関数$\alpha:G^n\rightarrow M$を指します。
+ただし、$M$はアーベル群で、ここでは$M=U(1)$を考えます。
+$n$-コチェインの集合を$C^{n}(G,M)$と書くことにし、次の微分$\delta_n:C^{n-1}\rightarrow C^{n}$を定義しましょう：
+\begin{equation}
+  (\delta_n\alpha)(g_1,\cdots,g_{n})
+  \equiv
+  \alpha(g_2,\cdots,g_{n})
+  +
+  \sum_{i=1}^{n-1} (-1)^i \alpha(g_1,\cdots,g_ig_{i+1},\cdots,g_{n})
+  +
+  (-1)^n \alpha(g_1,\cdots,g_{n-1})
+  .
+\end{equation}
+ただし、$\alpha\in C^{n-1}$です。
+この定義に従うと、\eqref{eq:cocycle-condition}は$\delta_2 \alpha =0$と書けることがわかります。
+
+この演算はニルポテントで$\delta_n\cdot\delta_{n-1}=0$を満たし、したがって、コホモロジーを定義できます。
+まずは、$\delta_{n}$について閉じているコチェインを
+\begin{equation}
+  Z^{n-1}(G,M)
+  \equiv
+  \mathrm{Ker} \, \delta_{n}
+  =
+  \left\{
+  \alpha \in C^{n-1}(G,M) \mid \delta_n \alpha =0
+  \right\}
+\end{equation}
+と定義します。これを$n$-コサイクルと呼びます。今回の場合、$\alpha$は2-コサイクルだったので、$Z^2(G,M)$がどのようなものであるかがわかればよさそうに思えます。
+
+しかしながら、$U_g$には脚注\ref{foot:wigner}で述べたように位相の不定性があるのでした。今、$U_g\rightarrow e^{i\beta(g)}U_g$と$U_g$を位相変換したとしましょう。このとき、\eqref{eq:projective-representation}は
+\begin{equation}
+  U_{g} U_{g'}
+  =
+  e^{i\alpha(g,g')-i\beta(g)-i\beta(g')+i\beta(gg')} U_{gg'}
+\end{equation}
+となり、$\alpha(g,g')$は$(\delta_2 \beta)(g,g')=\beta(g_2)-\beta(g_1g_2)+\beta(g_1)$ぶんのズレだけゆるされることを意味しています。
+このexactなコチェインの集合を
+\begin{equation}
+  B^{n}(G,M)
+  \equiv
+  \mathrm{Im} \, \delta_{n}
+  =
+  \left\{
+  \alpha \in C^{n}(G,M) \mid \exists \beta \in C^{n-1}(G,M), \alpha = \delta_{n}\beta
+  \right\}
+\end{equation}
+と定義し、この元を$n$-コバウンダリーと言います。
+
+したがって、今、私たちが興味あるのは
+\begin{equation}
+  H^2(G,M)
+  \equiv
+  Z^2(G,M) / B^2(G,M)
+\end{equation}
+であり、このコホモロジーが非自明であるときに、量子論の対称性が古典的な対称性$G$の射影表現になることがわかるのです。
+残念ながら、私の勉強が追いついていないので、事実を述べるだけにとどめたいのですが、例えば\href{https://mathoverflow.net/questions/127660}{このMathOverflowの投稿}によると、$H^2(\bZ_2\times\bZ_2,U(1))\simeq \bZ_2$となるそうで、これはまさに$G=\bZ_2\times \bZ_2$の対称性をもつ系が2次元表現をもって縮退をもつことと対応しています。（$G=O(2)$のときは探せませんでした。たぶん、この場合も非自明なのでしょう。）
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\clearpage
 \section{トーラス上のランダウ準位}
+\label{sec:landau-level-torus}
 
+では、これまでの話を踏まえて、2次元トーラス$T^2$上のランダウ準位について考えてみましょう\cite{Kobayashi:2024yqq}。
+基本的には、ランダウ準位の議論のまんまなのですが、そこに$x\sim x+1$と$y\sim y+1$という同一視が入ります。これにより、系の平行移動に対する対称性が大きく制限され、結果的に縮退度が有限になります。
 
+その前にもうひとつ、周期境界条件が入るときの注意点として、磁束が量子化されることについて言及しておきます。
+まず、$x$方向に1だけ平行移動する操作を考えます。このとき、ゲージポテンシャルは
+\begin{equation}
+  \vA(x+1,y)
+  =
+  \vA(x,y) + \vec{\nab} \chi_x, \quad
+  \chi_x = \frac{B}{2} y
+\end{equation}
+と変化します。波動関数は、ゲージ変換に対してそのパラメターが位相となって出てくることを思い出すと
+\begin{equation}
+  \Psi(x+1,y)
+  =
+  e^{i\chi_x} \Psi(x,y)
+  =
+  e^{i\frac{B}{2}y} \Psi(x,y)
+\end{equation}
+です。
+同様に、$y$方向に1だけ平行移動する操作を考えると
+\begin{equation}
+  \Psi(x,y+1)
+  =
+  e^{-i\frac{B}{2}x} \Psi(x,y)
+\end{equation}
+となります。
+さて、ではこの2つの操作の順番を入れ替えて$\Psi(x,y)$からスタートしてみましょう。
+やってみると$\Psi(x+1,y+1)$を2通りの方法で求めることができ、
+\begin{equation}
+  \exp
+  \left[
+    i\frac{B}{2}(y+1) - i\frac{B}{2}x
+    \right]
+  \Psi(x,y)
+  =
+  \exp
+  \left[
+    -i\frac{B}{2}(x+1) + i\frac{B}{2}y
+    \right]
+  \Psi(x,y)
+\end{equation}
+となり、両辺を比較すると
+\begin{equation}
+  e^{iB} = 1
+\end{equation}
+が成立する必要があります。したがって、$B=2\pi M \in 2\pi\bZ$となり、磁束が量子化されます。今後は$M\in \bZ$として話を進めます。
 
+平行移動に対応する生成子$K_x, K_y$を$X=K_x/2\pi M, P=K_y$と定義します。するとこれらの交換関係は$[X,P]=i$となって、まさに位置と運動量の交換関係になります。ここで、同時固有状態$\ket{x}$を考えると、$e^{i(\Delta x)P}\ket{x}=\ket{x+\Delta x}$であることと、$P$がハミルトニアンと可換であることから$P\ket{\psi}=\ket{X}$が成立することを組み合わせると、$\ket{x+1}=\ket{x}$となることがわかります。また、この$x$は取る値が決まっており
+\begin{equation}
+  x= 0, \frac{1}{M}, \cdots, \frac{M-1}{M}
+\end{equation}
+の$M$個の値を取ります。したがって、ランダウ準位の各エネルギー固有値に対して、$M$個の状態が対応することがわかります。これがトーラス上のランダウ準位の縮退度です。
 
+この縮退を入れ替える変換を$C$としましょう。すると
+\begin{equation}
+  C
+  =
+  \begin{pmatrix}
+    0 & 1 &        &        &   \\
+      & 0 & 1      &        &   \\
+      &   & \ddots & \ddots &   \\
+      &   &        & 0      & 1 \\
+    1 &   &        &        & 0
+  \end{pmatrix}
+\end{equation}
+と表現できます。この変換は$C^M=1$を満たすので、$\bZ_M^C$の生成子として振る舞います。
+またもうひとつ、この系は
+\begin{equation}
+  Z
+  =
+  \begin{pmatrix}
+    1 &      &        &        &            \\
+      & \rho &        &        &            \\
+      &      & \rho^2 &        &            \\
+      &      &        & \ddots &            \\
+      &      &        &        & \rho^{M-1}
+  \end{pmatrix}
+  ,\quad
+  \rho = e^{2\pi i/M}
+\end{equation}
+という変換の対称性ももっています。この変換も$Z^M=1$なので、$\bZ_M$の生成子として振る舞います\cite{Abe:2009vi}。
+実はこの変換、交換をせず
+\begin{equation}
+  CZ = \rho ZC
+\end{equation}
+という関係を満たすので$\bZ_M^C\times \bZ_M$とはなりません。
+この代数を閉じるためには、対角な
+\begin{equation}
+  Z' =
+  \begin{pmatrix}
+    \rho &      &      &        &      \\
+         & \rho &      &        &      \\
+         &      & \rho &        &      \\
+         &      &      & \ddots &      \\
+         &      &      &        & \rho
+  \end{pmatrix}
+\end{equation}
+という変換も必要で、これが生成する群を$\bZ_M'$とします。
+すると、最終的にこの系の対称性は$H_M\equiv (\bZ_M\times \bZ_M')\rtimes \bZ_M^C$といわれるハイゼンベルグ群になります。
 
+ここからは勝手な妄想なのですが、前の章で言及した通り、その理論の縮退は系のアノマリーと関係しているはずです。
+そのアノマリーは群コホモロジーで分類できるのでした。
+ですので、今回の例だと$H^2(H_M)$が非自明なのではないかなと予想ができます。
+詳しい文献は探せていないので、もし何か心当たりがあればぜひ教えてください。（知っている人から見たら当然のことなのかもしれませんが。）
+自分のほうでも、時間を見つけて計算方法を勉強してみたいです。
 
+\section{おわりに}
+\label{sec:conclusion}
 
+このPDFを開いてくださり、ありがとうございました。
+直前に書いてあるとおり、この構造の背後にあるアノマリーや群コホモロジーの話をちょっと勉強してみたいというところからはじまったのですが、もうひとつやりたいことがあって、それはこの模型のラグランジアンによる理解です。
+コンパクトボゾンみたいに\cite{Gaiotto:2017yup}の論文にあるような理解ができると思っているのですが、まだうまく整理できていません。
+おそらく、$\theta$項への制限が磁束の量子化に対応していると思うのですが、、、
+ここらへんを時間を見つけて明らかにしたいと思っています。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\clearpage
-\section{近況報告}
-
-
-
+ささっと書いてしまったノートですので、かなり読みづらいものになってしまったと反省しています。
+いつも思うのですが、しっかり前もって準備をしなくては。本当はゲージ化をして非可逆対称性の話もしたかったのですが、本当に時間が足りません。
+何か近況報告みたいなこともできればよかったのですが\footnote{むしろそっちの方が需要ある？}、まあそれはどこかで会うなりして話しましょう。
 
 
 % ----------------------------------------
@@ -630,7 +788,7 @@ $\theta=\pi$の場合は、古典的に$U(1)\rtimes \bZ_2$の対称性がある�
 
 
 % ----------------------------------------
-\clearpage
+% \clearpage
 \bibliography{ref}
 \bibliographystyle{ytphys}
 
